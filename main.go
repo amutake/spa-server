@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,7 +30,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	port := ":5050"
+
+	flag.Parse()
+	if flag.NArg() != 0 {
+		port = ":" + flag.Arg(0)
+	}
+
 	http.HandleFunc("/", handler)
 	fmt.Println("spa-server starting on localhost" + port)
 	err := http.ListenAndServe(port, nil)
