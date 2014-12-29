@@ -10,20 +10,23 @@ import (
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	path := "." + r.URL.Path
-	fmt.Println(path)
-	_, err := os.Stat(path)
-	if err == nil {
+	fmt.Print(path)
+	file, err := os.Stat(path)
+	if err == nil && !file.IsDir() {
 		// file exists
+		fmt.Println(" => " + path)
 		http.ServeFile(w, r, path)
 	} else {
-		// file does not exists
+		// file does not exist
 		index := "index.html"
-		_, err := os.Stat(index)
-		if err == nil {
+		file, err := os.Stat(index)
+		if err == nil && !file.IsDir() {
 			// index.html exists
+			fmt.Println(" => " + index)
 			http.ServeFile(w, r, index)
 		} else {
-			// index.html does not exists
+			// index.html does not exist
+			fmt.Println(" => NotFound")
 			http.NotFound(w, r)
 		}
 	}
