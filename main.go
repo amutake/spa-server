@@ -10,7 +10,7 @@ import (
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	path := "." + r.URL.Path
-	fmt.Print(path)
+	fmt.Print(r.URL.Path)
 	file, err := os.Stat(path)
 	if err == nil && !file.IsDir() {
 		// file exists
