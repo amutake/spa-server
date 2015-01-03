@@ -4,8 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"mime"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -14,8 +16,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	file, err := os.Stat(path)
 	if err == nil && !file.IsDir() {
 		// file exists
-		fmt.Println(" => " + path)
-		http.ServeFile(w, r, path)
+		gz := path + ".gz"
+		file, err := os.Stat(gz)
+		t := mime.TypeByExtension(filepath.Ext(path))
+		if err == nil && !file.IsDir() && t != "" {
+			fmt.Println(" => " + gz)
+			w.Header().Add("Content-Encoding", "gzip")
+			w.Header().Add("Content-Type", t)
+			http.ServeFile(w, r, gz)
+		} else {
+			fmt.Println(" => " + path)
+			http.ServeFile(w, r, path)
+		}
 	} else {
 		// file does not exist
 		index := "index.html"
